@@ -83,14 +83,24 @@ defmodule Backgammon.Game.Board do
 
     {board, dest_checkers} =
       case board[to] do
-        [] -> {board, [src_color]}
-        [^src_color | _rest] -> {board, [src_color | board[to]]}
-        [:black] -> {apply_move(board, {to, :white_bar}), [src_color]}
-        [:white] -> {apply_move(board, {to, :black_bar}), [src_color]}
-        _ -> raise "Not a valid move"
+        [] ->
+          {board, [src_color]}
+
+        [^src_color | _rest] ->
+          {board, [src_color | board[to]]}
+
+        [:black] ->
+          {apply_move(board, {to, :black_bar}), [src_color]}
+
+        [:white] ->
+          {apply_move(board, {to, :white_bar}), [src_color]}
+
+        _ ->
+          raise "Not a valid move"
       end
 
     %{board | from => src_checkers, to => dest_checkers}
+    |> IO.inspect()
   end
 
   defp calculate_valid_moves(board, current_player, step) do
@@ -110,9 +120,11 @@ defmodule Backgammon.Game.Board do
   defp valid_move?(board, current_player, move) do
     cond do
       checker_on_the_bar?(board, current_player) ->
+        IO.inspect(board, label: "valid_bar")
         valid_bar_move?(board, current_player, move)
 
       bear_off?(board, current_player) ->
+        IO.inspect(board, label: "valid_bear")
         valid_bear_off_move?(board, current_player, move)
 
       true ->
@@ -158,11 +170,11 @@ defmodule Backgammon.Game.Board do
     end
   end
 
-  defp generate_move(:black, checker_position, step),
-    do: {checker_position, checker_position + step}
+  defp generate_move(:black, :black_bar, step), do: {:black_bar, step}
+  defp generate_move(:black, c_pos, step), do: {c_pos, c_pos + step}
 
-  defp generate_move(:white, checker_position, step),
-    do: {checker_position, checker_position - step}
+  defp generate_move(:white, :white_bar, step), do: {:white_bar, step}
+  defp generate_move(:white, c_pos, step), do: {c_pos, c_pos - step}
 
   def get_checker_positions(board, current_player) do
     Enum.reduce(board, [], fn

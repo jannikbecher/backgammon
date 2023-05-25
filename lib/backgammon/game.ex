@@ -53,7 +53,6 @@ defmodule Backgammon.Game do
 
   defp do_simulate(game, action) do
     game = apply_action(game, action)
-    IO.inspect(action)
 
     action =
       get_available_actions(game)
