@@ -126,6 +126,14 @@ defmodule Backgammon.Game do
     |> apply_turn(rest)
   end
 
+  def apply_move(board, {from, to}) when to > 24 do
+    apply_move(board, {from, :black_bear_off})
+  end
+
+  def apply_move(board, {from, to}) when to < 1 do
+    apply_move(board, {from, :white_bear_off})
+  end
+
   def apply_move(board, {from, to}) do
     [src_color | src_checkers] = board[from]
 
@@ -202,9 +210,18 @@ defmodule Backgammon.Game do
 
   defp valid_bar_move?(_board, _current_player, _move), do: false
 
-  defp valid_bear_off_move?(board, current_player, move) do
-    # TODO implment
-    true
+  defp valid_bear_off_move?(_board, _current_player, {_from, 25}), do: true
+
+  defp valid_bear_off_move?(_board, _current_player, {_from, 0}), do: true
+
+  defp valid_bear_off_move?(board, :black, {from, _to}) do
+    last_checker = get_checker_positions(board, :black) |> Enum.min()
+    if last_checker == from, do: true, else: false
+  end
+
+  defp valid_bear_off_move?(board, :white, {from, _to}) do
+    last_checker = get_checker_positions(board, :white) |> Enum.max()
+    if last_checker == from, do: true, else: false
   end
 
   defp valid_normal_move?(board, current_player, {from, to}) do
