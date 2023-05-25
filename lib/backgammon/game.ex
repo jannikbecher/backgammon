@@ -105,8 +105,17 @@ defmodule Backgammon.Game do
     {:ok, %Game{game | board: apply_turn(board, moves)}, current_player: opponent}
   end
 
-  def apply_action(%Game{board: board} = game, :start_game) do
-    %Game{game | current_player: :black, dice_roll: {6, 5}}
+  def apply_action(%Game{} = game, :start_game) do
+    {start_player, start_roll} = get_start_roll()
+    %Game{game | current_player: start_player, dice_roll: start_roll}
+  end
+
+  defp get_start_roll() do
+    case do_roll_dice() do
+      {d, d} -> get_start_roll()
+      {d1, d2} when d1 > d2 -> {:black, {d1, d2}}
+      {d1, d2} when d1 < d2 -> {:white, {d1, d2}}
+    end
   end
 
   defp apply_turn(board, []), do: board
