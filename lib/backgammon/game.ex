@@ -29,6 +29,7 @@ defmodule Backgammon.Game do
           :start_game
           | :end_turn
           | {:turn, list(checker_move)}
+          | :no_valid_turn
 
   @spec new(keyword()) :: t()
   def new(opts \\ []) do
@@ -46,12 +47,13 @@ defmodule Backgammon.Game do
 
     action =
       get_available_actions(game)
-      |> hd()
+      |> Enum.random()
 
     do_simulate(game, action)
   end
 
   defp do_simulate(game, action) do
+    Process.sleep(100)
     game = apply_action(game, action)
 
     action =
@@ -59,15 +61,6 @@ defmodule Backgammon.Game do
       |> hd()
 
     do_simulate(game, action)
-  end
-
-  @spec roll_dice(t()) :: t()
-  def roll_dice(game) do
-    %Game{game | dice_roll: do_roll_dice()}
-  end
-
-  defp do_roll_dice do
-    {:rand.uniform(6), :rand.uniform(6)}
   end
 
   @spec get_available_actions(t()) :: list(action())
@@ -78,17 +71,17 @@ defmodule Backgammon.Game do
         current_player: current_player,
         dice_roll: dice_roll
       }) do
-    case dice_roll do
-      {double, double} ->
-        Board.calculate_valid_turns(board, current_player, [double, double, double, double])
-        |> Enum.map(&{:turn, &1})
+    valid_turns =
+      Board.calculate_valid_turns(board, current_player, dice_roll)
+      |> IO.inspect()
+      |> Enum.map(&{:turn, &1})
 
-      {dice1, dice2} ->
-        list1 = Board.calculate_valid_turns(board, current_player, [dice1, dice2])
-        list2 = Board.calculate_valid_turns(board, current_player, [dice2, dice1])
+    IO.inspect(board)
 
-        Enum.concat(list1, list2)
-        |> Enum.map(&{:turn, &1})
+    if Enum.empty?(valid_turns) do
+      [:no_valid_turn]
+    else
+      valid_turns
     end
   end
 
@@ -96,6 +89,8 @@ defmodule Backgammon.Game do
   def apply_action(%Game{board: board, current_player: current_player} = game, {:turn, moves}) do
     # TODO handle invalid moves
     opponent = get_opponent(current_player)
+    dice_roll = do_roll_dice()
+
     new_board = Board.apply_turn(board, moves)
 
     if length(new_board.black_bear_off) == 15 do
@@ -108,12 +103,16 @@ defmodule Backgammon.Game do
       raise "White won"
     end
 
-    %Game{game | board: new_board, current_player: opponent}
+    %Game{game | board: new_board, current_player: opponent, dice_roll: dice_roll}
   end
 
   def apply_action(%Game{} = game, :start_game) do
     {start_player, start_roll} = get_start_roll()
     %Game{game | current_player: start_player, dice_roll: start_roll}
+  end
+
+  def apply_action(%Game{current_player: current_player} = game, :no_valid_turn) do
+    %Game{game | current_player: get_opponent(current_player), dice_roll: do_roll_dice()}
   end
 
   defp get_start_roll() do
@@ -122,5 +121,9 @@ defmodule Backgammon.Game do
       {d1, d2} when d1 > d2 -> {:black, {d1, d2}}
       {d1, d2} when d1 < d2 -> {:white, {d1, d2}}
     end
+  end
+
+  defp do_roll_dice do
+    {:rand.uniform(6), :rand.uniform(6)}
   end
 end

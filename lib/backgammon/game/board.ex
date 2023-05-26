@@ -34,15 +34,6 @@ defmodule Backgammon.Game.Board do
     |> Map.put(:white_bear_off, [])
   end
 
-  @spec calculate_valid_turns(t(), color(), list(integer())) :: list()
-  def calculate_valid_turns(board, current_player, [step | steps]) do
-    valid_moves =
-      calculate_valid_moves(board, current_player, step)
-      |> Enum.map(&[&1])
-
-    do_calculate_valid_turns(board, current_player, steps, valid_moves)
-  end
-
   @spec apply_turn(t(), list()) :: t()
   def apply_turn(board, []), do: board
 
@@ -50,6 +41,16 @@ defmodule Backgammon.Game.Board do
     board
     |> apply_move({from, to})
     |> apply_turn(rest)
+  end
+
+  @spec calculate_valid_turns(t(), color(), {integer(), integer()}) :: list()
+  def calculate_valid_turns(board, current_player, {double, double}) do
+    do_calculate_valid_turns(board, current_player, [double, double, double, double], [[]])
+  end
+
+  def calculate_valid_turns(board, current_player, {dice1, dice2}) do
+    do_calculate_valid_turns(board, current_player, [dice1, dice2], [[]]) ++
+      do_calculate_valid_turns(board, current_player, [dice2, dice1], [[]])
   end
 
   def do_calculate_valid_turns(_board, _current_player, [], valid_turns), do: valid_turns
@@ -100,7 +101,6 @@ defmodule Backgammon.Game.Board do
       end
 
     %{board | from => src_checkers, to => dest_checkers}
-    |> IO.inspect()
   end
 
   defp calculate_valid_moves(board, current_player, step) do
@@ -120,12 +120,11 @@ defmodule Backgammon.Game.Board do
   defp valid_move?(board, current_player, move) do
     cond do
       checker_on_the_bar?(board, current_player) ->
-        IO.inspect(board, label: "valid_bar")
         valid_bar_move?(board, current_player, move)
 
       bear_off?(board, current_player) ->
-        IO.inspect(board, label: "valid_bear")
-        valid_bear_off_move?(board, current_player, move)
+        valid_normal_move?(board, current_player, move) or
+          valid_bear_off_move?(board, current_player, move)
 
       true ->
         valid_normal_move?(board, current_player, move)
@@ -146,15 +145,17 @@ defmodule Backgammon.Game.Board do
 
   defp valid_bear_off_move?(_board, _current_player, {_from, 0}), do: true
 
-  defp valid_bear_off_move?(board, :black, {from, _to}) do
+  defp valid_bear_off_move?(board, :black, {from, to}) when to > 24 do
     last_checker = get_checker_positions(board, :black) |> Enum.min()
     if last_checker == from, do: true, else: false
   end
 
-  defp valid_bear_off_move?(board, :white, {from, _to}) do
+  defp valid_bear_off_move?(board, :white, {from, to}) when to < 1 do
     last_checker = get_checker_positions(board, :white) |> Enum.max()
     if last_checker == from, do: true, else: false
   end
+
+  defp valid_bear_off_move?(_board, _current_player, _move), do: false
 
   defp valid_normal_move?(board, current_player, {from, to}) do
     opponent = get_opponent(current_player)
