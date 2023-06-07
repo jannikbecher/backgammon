@@ -44,42 +44,6 @@ defmodule Backgammon.Game do
     }
   end
 
-  def simulate do
-    game =
-      new()
-      |> apply_action(:start_game)
-
-    do_simulate(game)
-  end
-
-  def simulate(num) do
-    batch_size = div(num, 8)
-    for _ <- 1..8 do
-      Task.async(fn ->
-        for _ <- 1..batch_size do
-          {_game, game_value} = simulate()
-          game_value
-        end
-      end)
-    end
-    |> Task.await_many(:infinity)
-    |> List.flatten()
-  end
-
-  defp do_simulate(%Game{game_state: :finished, game_value: game_value} = game) do
-    {game, game_value}
-  end
-
-  defp do_simulate(game) do
-    action =
-      get_available_actions(game)
-      |> Enum.random()
-
-    game
-    |> apply_action(action)
-    |> do_simulate()
-  end
-
   @spec get_available_actions(t()) :: list(action())
   def get_available_actions(%Game{dice_roll: nil}), do: [:start_game]
 
