@@ -5,7 +5,8 @@ defmodule Backgammon.Game do
     :board,
     :current_player,
     :dice_roll,
-    :game_state
+    :game_state,
+    :game_value
   ]
 
   alias Backgammon.Game
@@ -17,7 +18,8 @@ defmodule Backgammon.Game do
           board: Board.t(),
           current_player: :black | :white | nil,
           dice_roll: {1..6, 1..6} | nil,
-          game_state: :running | :finished
+          game_state: :running | :finished,
+          game_value: (-3..3)
         }
 
   @type from :: 1..24 | :bar
@@ -36,7 +38,9 @@ defmodule Backgammon.Game do
     %Game{
       board: Board.new(),
       current_player: nil,
-      dice_roll: nil
+      dice_roll: nil,
+      game_state: :running,
+      game_value: 0
     }
   end
 
@@ -48,9 +52,25 @@ defmodule Backgammon.Game do
     do_simulate(game)
   end
 
-  defp do_simulate(game) do
-    Process.sleep(100)
+  def simulate(num) do
+    batch_size = div(num, 8)
+    for _ <- 1..8 do
+      Task.async(fn ->
+        for _ <- 1..batch_size do
+          {_game, game_value} = simulate()
+          game_value
+        end
+      end)
+    end
+    |> Task.await_many(:infinity)
+    |> List.flatten()
+  end
 
+  defp do_simulate(%Game{game_state: :finished, game_value: game_value} = game) do
+    {game, game_value}
+  end
+
+  defp do_simulate(game) do
     action =
       get_available_actions(game)
       |> Enum.random()
@@ -87,17 +107,12 @@ defmodule Backgammon.Game do
 
     new_board = Board.apply_turn(board, moves)
 
-    if length(new_board.black_bear_off) == 15 do
-      IO.inspect(game)
-      raise "Black won"
+    case Board.check_winner(new_board, current_player) do
+      0 ->
+        %Game{game | board: new_board, current_player: opponent, dice_roll: dice_roll}
+      game_value ->
+        %Game{game | board: new_board, game_state: :finished, game_value: game_value}
     end
-
-    if length(new_board.white_bear_off) == 15 do
-      IO.inspect(game)
-      raise "White won"
-    end
-
-    %Game{game | board: new_board, current_player: opponent, dice_roll: dice_roll}
   end
 
   def apply_action(%Game{} = game, :start_game) do

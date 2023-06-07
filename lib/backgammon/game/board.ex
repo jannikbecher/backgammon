@@ -72,6 +72,31 @@ defmodule Backgammon.Game.Board do
     do_calculate_valid_turns(board, current_player, steps, updated_turns)
   end
 
+  @spec check_winner(t(), color()) :: integer()
+  def check_winner(board, :black) do
+    if length(board.black_bear_off) == 15 do
+      cond do
+        length(board.white_bar) != 0 -> -3
+        length(board.white_bear_off) != 0 -> -2
+        true -> -1
+      end
+    else
+      0
+    end
+  end
+
+  def check_winner(board, :white) do
+    if length(board.white_bear_off) == 15 do
+      cond do
+        length(board.black_bar) != 0 -> 3
+        length(board.black_bear_off) != 0 -> 2
+        true -> 1
+      end
+    else
+      0
+    end
+  end
+
   defp new_checker(color, num), do: Enum.to_list(1..num) |> Enum.map(fn _ -> color end)
 
   defp apply_move(board, {from, to}) when is_integer(to) and to > 24 do
