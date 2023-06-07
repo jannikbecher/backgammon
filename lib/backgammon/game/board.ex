@@ -61,9 +61,12 @@ defmodule Backgammon.Game.Board do
         board
         |> apply_turn(moves)
         |> calculate_valid_moves(current_player, step)
-        |> Enum.map(fn move ->
-          moves ++ [move]
-        end)
+        |> case do
+          [] -> [moves]
+          valid_moves -> Enum.map(valid_moves, fn valid_move ->
+            moves ++ [valid_move]
+          end)
+        end
       end)
 
     do_calculate_valid_turns(board, current_player, steps, updated_turns)
@@ -160,21 +163,17 @@ defmodule Backgammon.Game.Board do
   defp valid_normal_move?(board, current_player, {from, to}) do
     opponent = get_opponent(current_player)
 
-    if board[from] do
-      case board[to] do
-        [^opponent, ^opponent | _rest] -> false
-        nil -> false
-        _ -> true
-      end
-    else
-      false
+    case board[to] do
+      [^opponent, ^opponent | _rest] -> false
+      nil -> false
+      _ -> true
     end
   end
 
   defp generate_move(:black, :black_bar, step), do: {:black_bar, step}
   defp generate_move(:black, c_pos, step), do: {c_pos, c_pos + step}
 
-  defp generate_move(:white, :white_bar, step), do: {:white_bar, step}
+  defp generate_move(:white, :white_bar, step), do: {:white_bar, 25 - step}
   defp generate_move(:white, c_pos, step), do: {c_pos, c_pos - step}
 
   def get_checker_positions(board, current_player) do

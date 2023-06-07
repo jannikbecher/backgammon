@@ -45,22 +45,19 @@ defmodule Backgammon.Game do
       new()
       |> apply_action(:start_game)
 
+    do_simulate(game)
+  end
+
+  defp do_simulate(game) do
+    Process.sleep(100)
+
     action =
       get_available_actions(game)
       |> Enum.random()
 
-    do_simulate(game, action)
-  end
-
-  defp do_simulate(game, action) do
-    Process.sleep(100)
-    game = apply_action(game, action)
-
-    action =
-      get_available_actions(game)
-      |> hd()
-
-    do_simulate(game, action)
+    game
+    |> apply_action(action)
+    |> do_simulate()
   end
 
   @spec get_available_actions(t()) :: list(action())
@@ -73,10 +70,7 @@ defmodule Backgammon.Game do
       }) do
     valid_turns =
       Board.calculate_valid_turns(board, current_player, dice_roll)
-      |> IO.inspect()
       |> Enum.map(&{:turn, &1})
-
-    IO.inspect(board)
 
     if Enum.empty?(valid_turns) do
       [:no_valid_turn]
@@ -86,8 +80,8 @@ defmodule Backgammon.Game do
   end
 
   @spec apply_action(t(), action()) :: {:ok, t()} | :error
-  def apply_action(%Game{board: board, current_player: current_player} = game, {:turn, moves}) do
     # TODO handle invalid moves
+  def apply_action(%Game{board: board, current_player: current_player} = game, {:turn, moves}) do
     opponent = get_opponent(current_player)
     dice_roll = do_roll_dice()
 
