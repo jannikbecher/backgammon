@@ -27,6 +27,14 @@ defmodule Backgammon.Server do
   @doc """
 
   """
+  @spec get_current_state(pid()) :: Game.t()
+  def get_current_state(pid) do
+    GenServer.call(pid, :get_current_state)
+  end
+
+  @doc """
+
+  """
   @spec apply_action(pid(), Game.action()) :: {:ok, atom(), atom()} | {:error, any()}
   def apply_action(pid, action) do
     GenServer.call(pid, {:apply_action, action})
@@ -41,6 +49,11 @@ defmodule Backgammon.Server do
   def handle_call(:get_available_actions, _from, game) do
     actions = Game.get_available_actions(game)
     {:reply, actions, game}
+  end
+
+  @impl true
+  def handle_call(:get_current_state, _from, game) do
+    {:reply, game, game}
   end
 
   @impl true
