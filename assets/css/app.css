@@ -3,7 +3,7 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
-.gameBoard {
+#gameBoard {
   height: 500px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 0.5fr;

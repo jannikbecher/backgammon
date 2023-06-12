@@ -15,9 +15,13 @@ defmodule BackgammonWeb.BoardComponents do
   def checker(assigns) do
     ~H"""
     <%= if @color == :black do %>
-      <div class="w-10 h-10 rounded-full bg-black" />
+      <div class="w-10 h-10 rounded-full bg-black focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400
+          drag-item:focus-within:ring-0 drag-item:focus-within:ring-offset-0
+          drag-ghost:bg-zinc-300 drag-ghost:border-0 drag-ghost:ring-0" />
     <% else %>
-      <div class="w-10 h-10 rounded-full bg-white" />
+      <div class="w-10 h-10 rounded-full bg-white focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400
+          drag-item:focus-within:ring-0 drag-item:focus-within:ring-offset-0
+          drag-ghost:bg-zinc-300 drag-ghost:border-0 drag-ghost:ring-0" />
     <% end %>
     """
   end
