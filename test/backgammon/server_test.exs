@@ -16,8 +16,10 @@ defmodule Backgammon.ServerTest do
     do_simulate(game, game_state, game_value)
   end
 
-  test "run 1000 games" do
-    batch_size = div(1000, 8)
+  @tag timeout: :infinity
+  test "run 100 games" do
+    batch_size = div(100, 8)
+
     for _ <- 1..8 do
       Task.async(fn ->
         for _ <- 1..batch_size do

@@ -62,10 +62,13 @@ defmodule Backgammon.Game.Board do
         |> apply_turn(moves)
         |> calculate_valid_moves(current_player, step)
         |> case do
-          [] -> [moves]
-          valid_moves -> Enum.map(valid_moves, fn valid_move ->
-            moves ++ [valid_move]
-          end)
+          [] ->
+            [moves]
+
+          valid_moves ->
+            Enum.map(valid_moves, fn valid_move ->
+              moves ++ [valid_move]
+            end)
         end
       end)
 

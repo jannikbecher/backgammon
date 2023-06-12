@@ -46,9 +46,11 @@ defmodule Backgammon.Server do
   @impl true
   def handle_call({:apply_action, action}, _from, game) do
     valid_actions = Game.get_available_actions(game)
+
     if action in valid_actions do
       updated_game = Game.apply_action(game, action)
-      {:reply, {:ok, updated_game.current_player, updated_game.game_state, updated_game.game_value}, updated_game} 
+
+      {:reply, {:ok, updated_game}, updated_game}
     else
       {:reply, {:error, "Not a valid action: #{inspect(action)}"}, game}
     end
