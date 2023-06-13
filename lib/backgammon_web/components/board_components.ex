@@ -34,7 +34,7 @@ defmodule BackgammonWeb.BoardComponents do
       <div class={"absolute inset-0 triangle-#{@direction} bg-#{@color}-500 z-0"} />
       <div
         id={@id}
-        class={"absolute inset-0 flex flex-col#{if @direction == "up", do: "-reverse"} z-10 items-center"}
+        class={"absolute inset-0 flex flex-col z-10 #{if @direction == "up", do: "justify-end"} items-center"}
         phx-hook="Sortable"
       >
         <.bg_checker :for={color <- @checkers} color={color} />
