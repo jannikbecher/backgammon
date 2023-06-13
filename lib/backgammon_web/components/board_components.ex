@@ -10,10 +10,11 @@ defmodule BackgammonWeb.BoardComponents do
 
   """
   attr :color, :atom, values: [:black, :white], required: true
+  attr :class, :string, default: ""
 
   def bg_checker(assigns) do
     ~H"""
-    <div class={"w-9 h-9 rounded-full bg-#{if @color == :black, do: "black", else: "white"} focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400
+    <div class={"#{@class} w-9 h-9 rounded-full bg-#{if @color == :black, do: "black", else: "white"} focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400
           drag-item:focus-within:ring-0 drag-item:focus-within:ring-offset-0
           drag-ghost:bg-zinc-300 drag-ghost:border-0 drag-ghost:ring-0"} />
     """

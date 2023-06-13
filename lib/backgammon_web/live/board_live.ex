@@ -27,6 +27,8 @@ defmodule BackgammonWeb.BoardLive do
   def render(assigns) do
     ~H"""
     <!-- Container for the board -->
+    <div class="bg-red-500 triangle-up h-4" />
+    <div class="bg-black triangle-up h-4" />
     <div class="grid grid-cols-[1.5fr_6fr_1fr_6fr_1.5fr] grid-rows-[5fr_1fr_5fr] bg-gray-300">
       <!-- left -->
       <div class="col-start-1 col-end-2 row-start-1 row-end-4">
@@ -48,11 +50,11 @@ defmodule BackgammonWeb.BoardLive do
           <div class="row-start-1">
             White pips
           </div>
-          <div id="white-bar" class="row-start-2" phx-hook="Sortable">
-            <.bg_checker :for={checker <- @board[:white_bar]} color={checker} />
+          <div id="white-bar" class="relative row-start-2" phx-hook="Sortable">
+            <.bg_checker class="absolute" :for={checker <- @board[:white_bar]} color={checker} />
           </div>
-          <div id="black-bar" class="row-start-4" phx-hook="Sortable">
-            <.bg_checker :for={checker <- @board[:black_bar]} color={checker} />
+          <div id="black-bar" class="relative row-start-4" phx-hook="Sortable">
+            <.bg_checker class="absolute" :for={checker <- @board[:black_bar]} color={checker} />
           </div>
           <div class="row-start-5">
             Black pips
@@ -92,10 +94,10 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
       <!-- right -->
-      <div id="black-bear-off" class="col-start-5 col-end-6 row-start-1 row-end-1" phx-hook="Sortable">
+      <div id="black-bear-off" class="col-start-5 col-end-6 row-start-1 row-end-1 justify-items-start bg-gray-500" phx-hook="Sortable">
         <.bg_checker :for={checker <- @board[:black_bear_off]} color={checker} />
       </div>
-      <div id="white-bear-off" class="col-start-5 col-end-6 row-start-3 row-end-4" phx-hook="Sortable">
+      <div id="white-bear-off" class="col-start-5 col-end-6 row-start-3 row-end-4 bg-gray-500" phx-hook="Sortable">
         <.bg_checker :for={checker <- @board[:white_bear_off]} color={checker} />
       </div>
       <!-- Outer Black -->
@@ -143,6 +145,8 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
     </div>
+    <div class="bg-black triangle-down h-4" />
+    <div class="bg-blue-500 triangle-down h-4" />
     """
   end
 
@@ -179,8 +183,7 @@ defmodule BackgammonWeb.BoardLive do
        |> apply_action(turn)
        |> assign(move_stack: [])}
     else
-      # TODO handle unallowed turns correctly
-      {:noreply, socket}
+      {:noreply, assign(socket, move_stack: [])}
     end
   end
 

@@ -36,7 +36,10 @@ Hooks.Sortable = {
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
       direction: "vertical",
-      onStart: e => isDragging = true,
+      onStart: e => {
+        e.item.classList.remove("absolute")
+        isDragging = true
+      },
       onEnd: e => {
         isDragging = false
         let params = { from: e.from.id, to: e.to.id }
