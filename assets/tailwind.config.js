@@ -65,6 +65,16 @@ module.exports = {
           }
         }
       }, { values })
+    }),
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        ".triangle-down": {
+          "clip-path": "polygon(50% 100%, 0 0, 100% 0)",
+        },
+        ".triangle-up": {
+          "clip-path": "polygon(50% 0, 0 100%, 100% 100%)",
+        }
+      })
     })
   ]
 }
