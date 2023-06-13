@@ -46,13 +46,13 @@ defmodule BackgammonWeb.BoardLive do
       <div class="col-start-3 col-end-4 row-start-1 row-end-4">
         <div class="grid grid-rows-5 h-full items-center">
           <div class="row-start-1">
-            Black pips
+            White pips
           </div>
-          <div class="row-start-2">
-            <.bg_checker :if={@board[:white_bar] != []} color={:white} />
+          <div id="white-bar" class="row-start-2" phx-hook="Sortable">
+            <.bg_checker :for={checker <- @board[:white_bar]} color={checker} />
           </div>
-          <div class="row-start-4">
-            <.bg_checker :if={@board[:black_bar] != []} color={:black} />
+          <div id="black-bar" class="row-start-4" phx-hook="Sortable">
+            <.bg_checker :for={checker <- @board[:black_bar]} color={checker} />
           </div>
           <div class="row-start-5">
             Black pips
@@ -92,7 +92,12 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
       <!-- right -->
-      <div class="col-start-5 col-end-6 row-start-1 row-end-4"></div>
+      <div id="black-bear-off" class="col-start-5 col-end-6 row-start-1 row-end-1" phx-hook="Sortable">
+        <.bg_checker :for={checker <- @board[:black_bear_off]} color={checker} />
+      </div>
+      <div id="white-bear-off" class="col-start-5 col-end-6 row-start-3 row-end-4" phx-hook="Sortable">
+        <.bg_checker :for={checker <- @board[:white_bear_off]} color={checker} />
+      </div>
       <!-- Outer Black -->
       <div class="col-start-2 col-end-3 row-start-1 row-end-2">
         <div class="grid grid-cols-6">
@@ -148,12 +153,19 @@ defmodule BackgammonWeb.BoardLive do
     {:noreply, apply_action(socket, action)}
   end
 
-  def handle_event("move_checker", %{"from" => "p" <> from, "to" => "p" <> to} = params, socket) do
-    new_move_stack =
-      socket.assigns.move_stack ++ [{String.to_integer(from), String.to_integer(to)}]
+  def handle_event("move_checker", %{"from" => from, "to" => to} = params, socket) do
+    from = parse_id(from)
+    to = parse_id(to)
+    new_move_stack = socket.assigns.move_stack ++ [{from, to}]
 
     {:noreply, assign(socket, move_stack: new_move_stack)}
   end
+
+  defp parse_id("black-bar"), do: :black_bar
+  defp parse_id("white-bar"), do: :white_bar
+  defp parse_id("black-bear-off"), do: :black_bear_off
+  defp parse_id("white-bear-off"), do: :white_bear_off
+  defp parse_id("p" <> point), do: point
 
   def handle_event("end_turn", _params, socket) do
     turn = {:turn, socket.assigns.move_stack}
