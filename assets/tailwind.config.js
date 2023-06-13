@@ -33,7 +33,7 @@ module.exports = {
     plugin(({ addVariant }) => addVariant("drag-item", [".drag-item&", ".drag-item &"])),
     plugin(({ addVariant }) => addVariant("drag-ghost", [".drag-ghost&", ".drag-ghost &"])),
 
-    // Embeds Hero Icons (https://heroicons.com) into your app.css bundle
+    // Embeds Heroicons (https://heroicons.com) into your app.css bundle
     // See your `CoreComponents.icon/1` for more information.
     //
     plugin(function({ matchComponents, theme }) {
@@ -57,6 +57,7 @@ module.exports = {
             [`--hero-${name}`]: `url('data:image/svg+xml;utf8,${content}')`,
             "-webkit-mask": `var(--hero-${name})`,
             "mask": `var(--hero-${name})`,
+            "mask-repeat": "no-repeat",
             "background-color": "currentColor",
             "vertical-align": "middle",
             "display": "inline-block",

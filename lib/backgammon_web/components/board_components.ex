@@ -5,7 +5,6 @@ defmodule BackgammonWeb.BoardComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import BackgammonWeb.Gettext
 
   @doc """
 

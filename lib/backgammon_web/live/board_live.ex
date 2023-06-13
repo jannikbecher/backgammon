@@ -27,7 +27,7 @@ defmodule BackgammonWeb.BoardLive do
   def render(assigns) do
     ~H"""
     <!-- Container for the board -->
-    <div class="grid grid-cols-[1.5fr_6fr_1fr_6fr_1.5fr] grid-rows-[5fr_1fr_5fr] bg-gray-200">
+    <div class="grid grid-cols-[1.5fr_6fr_1fr_6fr_1.5fr] grid-rows-[5fr_1fr_5fr] bg-gray-300">
       <!-- left -->
       <div class="col-start-1 col-end-2 row-start-1 row-end-4">
         <div class="grid grid-rows-3 h-full items-center">
@@ -123,7 +123,7 @@ defmodule BackgammonWeb.BoardLive do
       <!-- Outer White -->
       <div class="col-start-2 col-end-3 row-start-3 row-end-4">
         <div class="grid grid-cols-6">
-          <.bg_point id="p12" direction="up" color="blue" checkers={@board[17]} />
+          <.bg_point id="p12" direction="up" color="blue" checkers={@board[12]} />
           <.bg_point id="p11" direction="up" color="red" checkers={@board[11]} />
           <.bg_point id="p10" direction="up" color="blue" checkers={@board[10]} />
           <.bg_point id="p9" direction="up" color="red" checkers={@board[9]} />
@@ -135,7 +135,7 @@ defmodule BackgammonWeb.BoardLive do
       <div class="col-start-4 col-end-5 row-start-3 row-end-4">
         <div class="grid grid-cols-6">
           <.bg_point id="p6" direction="up" color="blue" checkers={@board[6]} />
-          <.bg_point id="p5" direction="up" color="red" checkers={@board[15]} />
+          <.bg_point id="p5" direction="up" color="red" checkers={@board[5]} />
           <.bg_point id="p4" direction="up" color="blue" checkers={@board[4]} />
           <.bg_point id="p3" direction="up" color="red" checkers={@board[3]} />
           <.bg_point id="p2" direction="up" color="blue" checkers={@board[2]} />
@@ -165,12 +165,11 @@ defmodule BackgammonWeb.BoardLive do
   defp parse_id("white-bar"), do: :white_bar
   defp parse_id("black-bear-off"), do: :black_bear_off
   defp parse_id("white-bear-off"), do: :white_bear_off
-  defp parse_id("p" <> point), do: point
+  defp parse_id("p" <> point), do: String.to_integer(point)
 
   def handle_event("end_turn", _params, socket) do
     turn = {:turn, socket.assigns.move_stack}
     available_actions = socket.assigns.available_actions
-    IO.inspect(turn)
 
     valid_move? = Enum.find(available_actions, &(&1 == turn))
 
