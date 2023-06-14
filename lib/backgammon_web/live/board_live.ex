@@ -47,6 +47,8 @@ defmodule BackgammonWeb.BoardLive do
   @impl true
   def render(assigns) do
     ~H"""
+    <div class="bg-red-500 triangle-up h-4" />
+    <div class="bg-black triangle-up h-4" />
     <!-- Container for the board -->
     <div class="grid grid-cols-[1.5fr_6fr_1fr_6fr_1.5fr] grid-rows-[5fr_1fr_5fr] bg-gray-300">
       <!-- left -->
@@ -179,6 +181,8 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
     </div>
+    <div class="bg-black triangle-down h-4" />
+    <div class="bg-blue-500 triangle-down h-4" />
     """
   end
 
