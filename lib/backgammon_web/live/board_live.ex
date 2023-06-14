@@ -32,7 +32,7 @@ defmodule BackgammonWeb.BoardLive do
     <div class="grid grid-cols-[1.5fr_6fr_1fr_6fr_1.5fr] grid-rows-[5fr_1fr_5fr] bg-gray-300">
       <!-- left -->
       <div class="col-start-1 col-end-2 row-start-1 row-end-4">
-        <div class="grid grid-rows-3 h-full items-center">
+        <div class="grid grid-rows-3 h-full place-items-center">
           <div class="row-span-1">
             Score white
           </div>
@@ -51,10 +51,10 @@ defmodule BackgammonWeb.BoardLive do
             White pips
           </div>
           <div id="white-bar" class="relative row-start-2" phx-hook="Sortable">
-            <.bg_checker class="absolute" :for={checker <- @board[:white_bar]} color={checker} />
+            <.bg_checker :for={checker <- @board[:white_bar]} class="absolute" color={checker} />
           </div>
           <div id="black-bar" class="relative row-start-4" phx-hook="Sortable">
-            <.bg_checker class="absolute" :for={checker <- @board[:black_bar]} color={checker} />
+            <.bg_checker :for={checker <- @board[:black_bar]} class="absolute" color={checker} />
           </div>
           <div class="row-start-5">
             Black pips
@@ -62,31 +62,20 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
       <div class="col-start-2 col-end-5 row-start-2 row-end-3">
-        <div class="grid grid-cols-3 h-full w-full place-content-center">
+        <div class="grid grid-cols-3 h-full w-full place-items-center">
           <div
             :if={@current_player == :white and @dice_roll != nil}
-            class="col-start-1 text-center"
+            class="col-start-1"
             phx-click="end_turn"
           >
             <.bg_two_dice numbers={@dice_roll} />
           </div>
-          <div class="col-start-2 text-center">
-            <button
-              :if={@available_actions == [:start_game]}
-              phx-click={JS.push("action_clicked", value: %{index: 0})}
-            >
-              Start Game
-            </button>
-            <button
-              :if={@available_actions == [:roll_dice]}
-              phx-click={JS.push("action_clicked", value: %{index: 0})}
-            >
-              Roll Dice
-            </button>
+          <div class="col-start-2 self-center">
+            <div class="box-border h-8 w-8 bg-red-500" />
           </div>
           <div
             :if={@current_player == :black and @dice_roll != nil}
-            class="col-start-3 text-center"
+            class="col-start-3"
             phx-click="end_turn"
           >
             <.bg_two_dice numbers={@dice_roll} />
@@ -94,11 +83,32 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
       <!-- right -->
-      <div id="black-bear-off" class="col-start-5 col-end-6 row-start-1 row-end-1 justify-items-start bg-gray-500" phx-hook="Sortable">
-        <.bg_checker :for={checker <- @board[:black_bear_off]} color={checker} />
-      </div>
-      <div id="white-bear-off" class="col-start-5 col-end-6 row-start-3 row-end-4 bg-gray-500" phx-hook="Sortable">
-        <.bg_checker :for={checker <- @board[:white_bear_off]} color={checker} />
+      <div class="col-start-5 col-end-6 row-start-1 row-end-4">
+        <div class="grid grid-rows-3 h-full place-items-center">
+          <div id="black-bear-off" class="row-start-1 h-full w-full bg-gray-500" phx-hook="Sortable">
+            <.bg_checker :for={checker <- @board[:black_bear_off]} color={checker} />
+          </div>
+          <div class="row-start-2">
+            <.button
+              :if={@available_actions == [:start_game]}
+              phx-click={JS.push("action_clicked", value: %{index: 0})}
+            >
+              Start
+            </.button>
+            <.button
+              :if={@available_actions == [:roll_dice]}
+              phx-click={JS.push("action_clicked", value: %{index: 0})}
+            >
+              Roll Dice
+            </.button>
+            <.button :if={@move_stack != []} phx-click="cancel_moves">
+              Cancel
+            </.button>
+          </div>
+          <div id="white-bear-off" class="row-start-3 h-full w-full bg-gray-500" phx-hook="Sortable">
+            <.bg_checker :for={checker <- @board[:white_bear_off]} color={checker} />
+          </div>
+        </div>
       </div>
       <!-- Outer Black -->
       <div class="col-start-2 col-end-3 row-start-1 row-end-2">
@@ -160,16 +170,29 @@ defmodule BackgammonWeb.BoardLive do
   def handle_event("move_checker", %{"from" => from, "to" => to} = params, socket) do
     from = parse_id(from)
     to = parse_id(to)
-    new_move_stack = socket.assigns.move_stack ++ [{from, to}]
+    move = {from, to}
+    move_stack = socket.assigns.move_stack
+    num_made_moves = length(move_stack)
 
-    {:noreply, assign(socket, move_stack: new_move_stack)}
+    available_turns =
+      Enum.map(socket.assigns.available_actions, &elem(&1, 1))
+
+    available_moves =
+      available_turns
+      |> Enum.reduce([], fn turn, acc ->
+        if Enum.take(turn, num_made_moves) == move_stack do
+          [Enum.at(turn, num_made_moves) | acc]
+        else
+          acc
+        end
+      end)
+
+    if move in available_moves do
+      {:noreply, assign(socket, move_stack: move_stack ++ [move])}
+    else
+      {:noreply, socket}
+    end
   end
-
-  defp parse_id("black-bar"), do: :black_bar
-  defp parse_id("white-bar"), do: :white_bar
-  defp parse_id("black-bear-off"), do: :black_bear_off
-  defp parse_id("white-bear-off"), do: :white_bear_off
-  defp parse_id("p" <> point), do: String.to_integer(point)
 
   def handle_event("end_turn", _params, socket) do
     turn = {:turn, socket.assigns.move_stack}
@@ -187,6 +210,10 @@ defmodule BackgammonWeb.BoardLive do
     end
   end
 
+  def handle_event("cancel_moves", _params, socket) do
+    {:noreply, assign(socket, move_stack: [])}
+  end
+
   defp apply_action(socket, action) do
     game = socket.assigns.game
     {:ok, game_state} = Server.apply_action(game, action)
@@ -200,4 +227,10 @@ defmodule BackgammonWeb.BoardLive do
       available_actions: available_actions
     )
   end
+
+  defp parse_id("black-bar"), do: :black_bar
+  defp parse_id("white-bar"), do: :white_bar
+  defp parse_id("black-bear-off"), do: :black_bear_off
+  defp parse_id("white-bear-off"), do: :white_bear_off
+  defp parse_id("p" <> point), do: String.to_integer(point)
 end
