@@ -205,9 +205,11 @@ defmodule Backgammon.Game.Board do
   end
 
   defp generate_move(:black, :black_bar, step), do: {:black_bar, step}
+  defp generate_move(:black, c_pos, step) when c_pos + step > 24, do: {c_pos, :black_bear_off}
   defp generate_move(:black, c_pos, step), do: {c_pos, c_pos + step}
 
   defp generate_move(:white, :white_bar, step), do: {:white_bar, 25 - step}
+  defp generate_move(:white, c_pos, step) when c_pos - step < 1, do: {c_pos, :white_bear_off}
   defp generate_move(:white, c_pos, step), do: {c_pos, c_pos - step}
 
   def get_checker_positions(board, current_player) do

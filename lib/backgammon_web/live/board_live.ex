@@ -114,7 +114,7 @@ defmodule BackgammonWeb.BoardLive do
       <!-- right -->
       <div class="col-start-5 col-end-6 row-start-1 row-end-4">
         <div class="grid grid-rows-3 place-items-center h-full">
-          <div id="black-bear-off" class="row-start-1 bg-gray-500" phx-hook="Sortable">
+          <div id="black-bear-off" class="row-start-1 bg-gray-500 w-full h-full" phx-hook="Sortable">
             <.bg_checker :for={checker <- @data_view.board[:black_bear_off]} color={checker} />
           </div>
           <div class="row-start-2">
@@ -131,7 +131,7 @@ defmodule BackgammonWeb.BoardLive do
               Cancel
             </.button>
           </div>
-          <div id="white-bear-off" class="row-start-3 bg-gray-500" phx-hook="Sortable">
+          <div id="white-bear-off" class="row-start-3 bg-gray-500 w-full h-full" phx-hook="Sortable">
             <.bg_checker :for={checker <- @data_view.board[:white_bear_off]} color={checker} />
           </div>
         </div>
