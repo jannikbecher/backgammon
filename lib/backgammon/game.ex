@@ -49,7 +49,7 @@ defmodule Backgammon.Game do
           | {:client_leave, client_id()}
 
   @spec new(keyword()) :: t()
-  def new(opts \\ []) do
+  def new(_opts \\ []) do
     %Game{
       board: Board.new(),
       current_player: nil,
@@ -219,13 +219,6 @@ defmodule Backgammon.Game do
   end
 
   # ===
-
-  defp get_start_roll(dice_roll) do
-    case dice_roll do
-      {d1, d2} when d1 > d2 -> {:black, {d1, d2}}
-      {d1, d2} when d1 < d2 -> {:white, {d1, d2}}
-    end
-  end
 
   defp valid_checker_move?(game, move) do
     move_stack = game.move_stack

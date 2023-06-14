@@ -194,7 +194,7 @@ defmodule Backgammon.Game.Board do
 
   defp valid_bear_off_move?(_board, _current_player, _move), do: false
 
-  defp valid_normal_move?(board, current_player, {from, to}) do
+  defp valid_normal_move?(board, current_player, {_from, to}) do
     opponent = get_opponent(current_player)
 
     case board[to] do

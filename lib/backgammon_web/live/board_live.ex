@@ -205,7 +205,7 @@ defmodule BackgammonWeb.BoardLive do
   end
 
   @impl true
-  def handle_event("move_checker", %{"from" => from, "to" => to} = params, socket) do
+  def handle_event("move_checker", %{"from" => from, "to" => to}, socket) do
     from = parse_id(from)
     to = parse_id(to)
     Server.move_checker(socket.assigns.game.pid, {from, to})
@@ -263,7 +263,7 @@ defmodule BackgammonWeb.BoardLive do
     end
   end
 
-  defp after_operation(socket, _prev_socket, {:client_join, client_id, user}) do
+  defp after_operation(socket, _prev_socket, {:client_join, _client_id, user}) do
     push_event(socket, "client_joined", %{client: user})
   end
 
@@ -279,7 +279,7 @@ defmodule BackgammonWeb.BoardLive do
 
   defp handle_action(socket, _action), do: socket
 
-  defp update_data_view(data_view, prev_data, game, operation) do
+  defp update_data_view(_data_view, _prev_data, game, operation) do
     case operation do
       _ -> data_to_view(game)
     end

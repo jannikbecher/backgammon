@@ -1,10 +1,10 @@
 defmodule BackgammonWeb.LobbyLive do
   use BackgammonWeb, :live_view
 
-  alias Backgammon.{Server, Games}
+  alias Backgammon.{Games}
 
   @impl true
-  def mount(params, _session, socket) do
+  def mount(_params, _session, socket) do
     games = Backgammon.Tracker.list_games() |> Enum.reverse()
 
     {:ok, assign(socket, games: games)}

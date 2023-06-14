@@ -243,6 +243,7 @@ defmodule Backgammon.Server do
 
   # ===
 
+  @impl true
   def handle_info({:DOWN, _, :process, pid, _}, state) do
     state =
       if client_id = state.client_pids_with_id[pid] do

@@ -4,8 +4,6 @@ defmodule BackgammonWeb.BoardComponents do
   """
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
   @doc """
 
   """
