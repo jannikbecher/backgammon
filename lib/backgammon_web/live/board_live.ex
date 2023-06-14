@@ -48,12 +48,10 @@ defmodule BackgammonWeb.BoardLive do
   def render(assigns) do
     ~H"""
     <!-- Container for the board -->
-    <div class="bg-red-500 triangle-up h-4" />
-    <div class="bg-black triangle-up h-4" />
     <div class="grid grid-cols-[1.5fr_6fr_1fr_6fr_1.5fr] grid-rows-[5fr_1fr_5fr] bg-gray-300">
       <!-- left -->
       <div class="col-start-1 col-end-2 row-start-1 row-end-4">
-        <div class="grid grid-rows-3 h-full place-items-center">
+        <div class="grid grid-rows-3 place-items-center h-full">
           <div class="row-span-1">
             Score white
           </div>
@@ -67,7 +65,7 @@ defmodule BackgammonWeb.BoardLive do
       </div>
       <!-- middle -->
       <div class="col-start-3 col-end-4 row-start-1 row-end-4">
-        <div class="grid grid-rows-5 h-full items-center">
+        <div class="grid grid-rows-5 place-items-center h-full">
           <div class="row-start-1">
             White pips
           </div>
@@ -91,7 +89,7 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
       <div class="col-start-2 col-end-5 row-start-2 row-end-3">
-        <div class="grid grid-cols-3 h-full w-full place-items-center">
+        <div class="grid grid-cols-3 place-items-center h-full">
           <div
             :if={@data_view.current_player == :white and @data_view.dice_roll != nil}
             class="col-start-1"
@@ -113,8 +111,8 @@ defmodule BackgammonWeb.BoardLive do
       </div>
       <!-- right -->
       <div class="col-start-5 col-end-6 row-start-1 row-end-4">
-        <div class="grid grid-rows-3 h-full place-items-center">
-          <div id="black-bear-off" class="row-start-1 h-full w-full bg-gray-500" phx-hook="Sortable">
+        <div class="grid grid-rows-3 place-items-center h-full">
+          <div id="black-bear-off" class="row-start-1 bg-gray-500" phx-hook="Sortable">
             <.bg_checker :for={checker <- @data_view.board[:black_bear_off]} color={checker} />
           </div>
           <div class="row-start-2">
@@ -131,14 +129,14 @@ defmodule BackgammonWeb.BoardLive do
               Cancel
             </.button>
           </div>
-          <div id="white-bear-off" class="row-start-3 h-full w-full bg-gray-500" phx-hook="Sortable">
+          <div id="white-bear-off" class="row-start-3 bg-gray-500" phx-hook="Sortable">
             <.bg_checker :for={checker <- @data_view.board[:white_bear_off]} color={checker} />
           </div>
         </div>
       </div>
       <!-- Outer Black -->
       <div class="col-start-2 col-end-3 row-start-1 row-end-2">
-        <div class="grid grid-cols-6">
+        <div class="grid grid-cols-6 h-full">
           <.bg_point id="p13" direction="down" color="red" checkers={@data_view.board[13]} />
           <.bg_point id="p14" direction="down" color="blue" checkers={@data_view.board[14]} />
           <.bg_point id="p15" direction="down" color="red" checkers={@data_view.board[15]} />
@@ -149,7 +147,7 @@ defmodule BackgammonWeb.BoardLive do
       </div>
       <!-- Home Black -->
       <div class="col-start-4 col-end-5 row-start-1 row-end-2">
-        <div class="grid grid-cols-6">
+        <div class="grid grid-cols-6 h-full">
           <.bg_point id="p19" direction="down" color="red" checkers={@data_view.board[19]} />
           <.bg_point id="p20" direction="down" color="blue" checkers={@data_view.board[20]} />
           <.bg_point id="p21" direction="down" color="red" checkers={@data_view.board[21]} />
@@ -160,7 +158,7 @@ defmodule BackgammonWeb.BoardLive do
       </div>
       <!-- Outer White -->
       <div class="col-start-2 col-end-3 row-start-3 row-end-4">
-        <div class="grid grid-cols-6">
+        <div class="grid grid-cols-6 h-full">
           <.bg_point id="p12" direction="up" color="blue" checkers={@data_view.board[12]} />
           <.bg_point id="p11" direction="up" color="red" checkers={@data_view.board[11]} />
           <.bg_point id="p10" direction="up" color="blue" checkers={@data_view.board[10]} />
@@ -171,7 +169,7 @@ defmodule BackgammonWeb.BoardLive do
       </div>
       <!-- Home White -->
       <div class="col-start-4 col-end-5 row-start-3 row-end-4">
-        <div class="grid grid-cols-6">
+        <div class="grid grid-cols-6 h-full">
           <.bg_point id="p6" direction="up" color="blue" checkers={@data_view.board[6]} />
           <.bg_point id="p5" direction="up" color="red" checkers={@data_view.board[5]} />
           <.bg_point id="p4" direction="up" color="blue" checkers={@data_view.board[4]} />
@@ -181,8 +179,6 @@ defmodule BackgammonWeb.BoardLive do
         </div>
       </div>
     </div>
-    <div class="bg-black triangle-down h-4" />
-    <div class="bg-blue-500 triangle-down h-4" />
     """
   end
 

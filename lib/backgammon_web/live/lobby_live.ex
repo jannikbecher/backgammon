@@ -13,8 +13,10 @@ defmodule BackgammonWeb.LobbyLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.button phx-click="create_game">Create Game</.button>
-    <p :for={game <- @games}><.link navigate={~p"/games/#{game.id}"}><%= game.id %></.link></p>
+    <div class="container">
+      <.button phx-click="create_game">Create Game</.button>
+      <p :for={game <- @games}><.link navigate={~p"/games/#{game.id}"}><%= game.id %></.link></p>
+    </div>
     """
   end
 

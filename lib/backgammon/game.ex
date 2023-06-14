@@ -148,6 +148,7 @@ defmodule Backgammon.Game do
         {d1, d2} when d1 > d2 -> :black
         {d1, d2} when d1 < d2 -> :white
       end
+
     valid_turns = Board.calculate_valid_turns(game.board, start_player, start_roll)
 
     game_actions
