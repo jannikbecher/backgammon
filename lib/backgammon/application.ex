@@ -12,8 +12,12 @@ defmodule Backgammon.Application do
       BackgammonWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Backgammon.PubSub},
+      # Start the tracker server on this node
+      {Backgammon.Tracker, pubsub_server: Backgammon.PubSub},
       # Start Finch
       {Finch, name: Backgammon.Finch},
+      # Start the supervisor dynamically managing games
+      {DynamicSupervisor, name: Backgammon.GameSupervisor, strategy: :one_for_one},
       # Start the Endpoint (http/https)
       BackgammonWeb.Endpoint
       # Start a worker by calling: Backgammon.Worker.start_link(arg)

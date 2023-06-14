@@ -85,6 +85,7 @@ defmodule BackgammonWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import BackgammonWeb.CoreComponents
+      import BackgammonWeb.BoardComponents
       import BackgammonWeb.Gettext
 
       # Shortcut for generating JS commands

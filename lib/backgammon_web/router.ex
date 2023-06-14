@@ -14,11 +14,20 @@ defmodule BackgammonWeb.Router do
     plug :accepts, ["json"]
   end
 
+  live_session :default do
+    scope "/", BackgammonWeb do
+      pipe_through :browser
+
+      live "/games/:id", BoardLive, :page
+    end
+  end
+
   scope "/", BackgammonWeb do
     pipe_through :browser
 
     get "/", PageController, :home
-    live "/game", BoardLive, :page
+    # TODO: implement this
+    live "/lobby", LobbyLive, :page
   end
 
   # Other scopes may use custom stacks.

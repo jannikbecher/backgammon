@@ -35,15 +35,11 @@ defmodule Backgammon.Game.Board do
   end
 
   @spec apply_turn(t(), list()) :: t()
-  def apply_turn(board, []), do: board
-
-  def apply_turn(board, [{from, to} | rest]) do
-    board
-    |> apply_move({from, to})
-    |> apply_turn(rest)
-  end
+  def apply_turn(board, turn), do: apply_moves(board, turn)
 
   @spec calculate_valid_turns(t(), color(), {integer(), integer()}) :: list()
+  def calculate_valid_turns(board, current_plyaer, dice_roll)
+
   def calculate_valid_turns(board, current_player, {double, double}) do
     do_calculate_valid_turns(board, current_player, [double, double, double, double], [[]])
   end
@@ -53,29 +49,9 @@ defmodule Backgammon.Game.Board do
       do_calculate_valid_turns(board, current_player, [dice2, dice1], [[]])
   end
 
-  def do_calculate_valid_turns(_board, _current_player, [], valid_turns), do: valid_turns
-
-  def do_calculate_valid_turns(board, current_player, [step | steps], valid_turns) do
-    updated_turns =
-      Enum.flat_map(valid_turns, fn moves ->
-        board
-        |> apply_turn(moves)
-        |> calculate_valid_moves(current_player, step)
-        |> case do
-          [] ->
-            [moves]
-
-          valid_moves ->
-            Enum.map(valid_moves, fn valid_move ->
-              moves ++ [valid_move]
-            end)
-        end
-      end)
-
-    do_calculate_valid_turns(board, current_player, steps, updated_turns)
-  end
-
   @spec check_winner(t(), color()) :: integer()
+  def check_winner(board, current_player)
+
   def check_winner(board, :black) do
     if length(board.black_bear_off) == 15 do
       cond do
@@ -100,7 +76,37 @@ defmodule Backgammon.Game.Board do
     end
   end
 
+  defp do_calculate_valid_turns(_board, _current_player, [], valid_turns), do: valid_turns
+
+  defp do_calculate_valid_turns(board, current_player, [step | steps], valid_turns) do
+    updated_turns =
+      Enum.flat_map(valid_turns, fn moves ->
+        board
+        |> apply_turn(moves)
+        |> calculate_valid_moves(current_player, step)
+        |> case do
+          [] ->
+            [moves]
+
+          valid_moves ->
+            Enum.map(valid_moves, fn valid_move ->
+              moves ++ [valid_move]
+            end)
+        end
+      end)
+
+    do_calculate_valid_turns(board, current_player, steps, updated_turns)
+  end
+
   defp new_checker(color, num), do: Enum.to_list(1..num) |> Enum.map(fn _ -> color end)
+
+  defp apply_moves(board, []), do: board
+
+  defp apply_moves(board, [{from, to} | rest]) do
+    board
+    |> apply_move({from, to})
+    |> apply_moves(rest)
+  end
 
   defp apply_move(board, {from, to}) when is_integer(to) and to > 24 do
     apply_move(board, {from, :black_bear_off})
