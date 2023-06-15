@@ -68,6 +68,14 @@ defmodule Backgammon.Server do
   @doc """
 
   """
+  @spec cancel_moves(pid()) :: :ok
+  def cancel_moves(pid) do
+    GenServer.call(pid, {:cancel_moves, self()})
+  end
+
+  @doc """
+
+  """
   @spec apply_turn(pid()) :: {:ok, atom(), atom()} | {:error, any()}
   def apply_turn(pid) do
     GenServer.call(pid, {:apply_turn, self()})
@@ -196,6 +204,14 @@ defmodule Backgammon.Server do
   def handle_call({:move_checker, client_pid, move}, _from, state) do
     client_id = client_id(state, client_pid)
     operation = {:move_checker, client_id, move}
+
+    {:reply, :ok, handle_operation(state, operation)}
+  end
+
+  @impl true
+  def handle_call({:cancel_moves, client_pid}, _from, state) do
+    client_id = client_id(state, client_pid)
+    operation = {:cancel_moves, client_id}
 
     {:reply, :ok, handle_operation(state, operation)}
   end

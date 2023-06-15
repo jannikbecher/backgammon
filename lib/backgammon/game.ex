@@ -42,6 +42,8 @@ defmodule Backgammon.Game do
 
   @type operation ::
           {:start_game, client_id(), dice_roll()}
+          | {:move_checker, client_id(), checker_move()}
+          | {:cancel_moves, client_id()}
           | {:apply_turn, client_id()}
           | {:set_dice, client_id(), dice_roll()}
           # TODO: implement user logic. For now Test User
@@ -82,6 +84,13 @@ defmodule Backgammon.Game do
     else
       _ -> :error
     end
+  end
+
+  def apply_operation(game, {:cancel_moves, _client_id}) do
+    game
+    |> with_actions()
+    |> cancel_moves()
+    |> wrap_ok()
   end
 
   def apply_operation(game, {:apply_turn, _client_id}) do
@@ -163,6 +172,11 @@ defmodule Backgammon.Game do
   defp move_checker({game, _} = game_actions, move) do
     game_actions
     |> set!(move_stack: game.move_stack ++ [move])
+  end
+
+  defp cancel_moves({game, _} = game_actions) do
+    game_actions
+    |> set!(move_stack: [])
   end
 
   defp apply_turn({game, _} = game_actions) do

@@ -128,7 +128,10 @@ defmodule BackgammonWeb.BoardLive do
               >
                 Roll Dice
               </.button>
-              <.button :if={@data_view.game_state == :finished} phx-click="cancel_moves">
+              <.button
+                :if={@data_view.game_state == :running and @data_view.dice_roll != nil}
+                phx-click="cancel_moves"
+              >
                 Cancel
               </.button>
             </div>
@@ -216,7 +219,8 @@ defmodule BackgammonWeb.BoardLive do
 
   @impl true
   def handle_event("cancel_moves", _params, socket) do
-    {:noreply, assign(socket, move_stack: [])}
+    Server.cancel_moves(socket.assigns.game.pid)
+    {:noreply, socket}
   end
 
   # ===
@@ -271,6 +275,10 @@ defmodule BackgammonWeb.BoardLive do
 
   defp after_operation(socket, _prev_socket, {:client_leave, client_id}) do
     push_event(socket, "client_left", %{client_id: client_id})
+  end
+
+  defp after_operation(socket, _pref_socket, {:cancel_moves, _client_id}) do
+    push_event(socket, "reload", %{})
   end
 
   defp after_operation(socket, _prev_socket, _operation), do: socket
